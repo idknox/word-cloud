@@ -7,28 +7,8 @@ class WordCloud
 
 
   def make_cloud
-    output = {}
     quotes_hash = get_quotes_hash
-
-    quotes_hash.each do |author, quotes|
-      quotes.each do |quote|
-        quote.split(" ").each do |word|
-          word.downcase!
-          if output[word] && !output[word][:people].include?(author)
-            output[word][:people] << author
-            output[word][:count] += 1
-          elsif output[word]
-            output[word][:count] += 1
-          else
-            output[word] = {
-              :count => 1,
-              :people => [author]
-            }
-          end
-        end
-      end
-    end
-    output
+    build_output(quotes_hash)
   end
 
   private
@@ -36,4 +16,32 @@ class WordCloud
   def get_quotes_hash
     JSON.parse(@quotes)
   end
+
+  def build_output(quotes_hash)
+    output = {}
+    quotes_hash.each do |author, quotes|
+      quotes.each do |quote|
+        quote.split(" ").each do |word|
+          word.downcase!
+          unless output[word]
+            output[word] = build_word_hash(author)
+          end
+
+          unless output[word][:people].include?(author)
+            output[word][:people] << author
+          end
+          output[word][:count] += 1
+        end
+      end
+    end
+    output
+  end
+
+  def build_word_hash(author)
+    {
+      :count => 0,
+      :people => [author]
+    }
+  end
+
 end
