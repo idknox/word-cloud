@@ -23,13 +23,8 @@ class WordCloud
       quotes.each do |quote|
         quote.split(" ").each do |word|
           word.downcase!
-          unless output[word]
-            output[word] = build_word_hash(author)
-          end
-
-          unless output[word][:people].include?(author)
-            output[word][:people] << author
-          end
+          output[word] = build_word_hash(author) unless output[word]
+          output[word][:people] << author unless output[word][:people].include?(author)
           output[word][:count] += 1
         end
       end
